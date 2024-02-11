@@ -1,0 +1,2 @@
+a = "hell"
+print(a)
