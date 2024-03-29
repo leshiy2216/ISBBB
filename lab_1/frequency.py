@@ -1,31 +1,30 @@
-import collections
+from collections import Counter
+import json
+
+RUS = ' оиеантсрвмлдякпзыьучжгхфйюбцшщэъ'
 
 
 def frequency():
-    f = open('cod3.txt', 'r', encoding='UTF-8')
-    text = f.read()
-    text = text.upper()
-    leng = len(text)
-    alphabetcrypt = dict()
-    for i in text:
-        alphabetcrypt[i] = text.count(i) / leng
-    alphabetcrypt = dict(sorted(alphabetcrypt.items()))
-    print(alphabetcrypt)
-    replace_symbol(text, alphabetcrypt)
+    freq = {}
+    with open('cod3.txt', 'r', encoding='UTF-8') as f:
+        data = f.read().lower()
+        data = data.replace('\n', '')
+        for char in data:
+            if char in freq:
+                freq[char] += 1
+            else:
+                freq[char] = 1
+    for i in freq:
+        freq[i] /= len(data)
+    sorted_freq = Counter(freq)
+    decrypt(data, sorted_freq)
 
-def replace_symbol(text, alphabetcrypt):
-    alphabet = {1: 'О',
-                2: 'И',
-                3: 'Е',
-                4: 'Т',
-                5: 'А',
-                6: 'С',
-                7: 'Н',
-                8: 'В',
-                9: 'Р',
-                10: 'Л',
-                11: 'М',
-                12: 'К',
-                13: 'Д'}
 
-frequency()
+def decrypt(text, alphabet):
+    text = text.replace('c', ' ')
+    text = text.replace('a', 'о')
+    text = text.replace('x', 'и')
+
+
+if __name__ == "__main__":
+    frequency()
