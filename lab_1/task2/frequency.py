@@ -1,6 +1,6 @@
 def frequency():
-    crypt_alphabet = "cа8r<4>хмелдбbр51к2оуф7t"
-    normal_alphabet = " ОЕНЧЬГИТМСЛПЯВЭЙРКАЖЗДУ"
+    crypt_alphabet = "cа8r<4м"
+    normal_alphabet = " ОЕНЧЬТ"
 
     decryption_mapping = dict(zip(crypt_alphabet, normal_alphabet))
 
