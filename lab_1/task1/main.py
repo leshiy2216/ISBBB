@@ -1,76 +1,61 @@
 import argparse
 import json
-
+from enum import Enum
+import file_utils
 
 alphabet = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'
 
+class Mode(Enum):
+    ENCRYPT = 1
+    DECRYPT = 2
 
-def read_file(file_path: str) -> str:
+def caesar_cipher(text: str, step: int, mode: Mode) -> str:
     """
-    the function read file
-    Parameters
-    ----------
-    file_path : str
-
-    Return
-    ------
-    str
-    """
-    with open(file_path, 'r', encoding='utf-8') as f:
-        return f.read().upper()
-
-
-def write_encrypted_text(text: str) -> None:
-    """
-    write encrypted text
-    Parameters
-    ----------
+    Encrypt or decrypt text using Caesar cipher.
+    
+    Parameters:
+    -----------
     text : str
-    """
-    with open('encrypted.txt', 'w', encoding='utf-8') as f:
-        f.write(text)
-
-
-def write_key(step: int) -> None:
-    """
-    write step to json
-
-    Parameters
-    ----------
+        Text to encrypt or decrypt.
     step : int
-    """
-    with open('key.json', 'w', encoding='utf-8') as f:
-        json.dump({'step': step}, f)
-
-
-def encryption(file_path: str, step: int) -> None:
-    """
-    encrypt text using Caesar cipher.
-
-    Parameters
-    ----------
-    file_path : str
-    step : int
-    """
-    content_upper = read_file(file_path)
+        Step of encryption or decryption.
+    mode : Mode
+        Mode of operation, encrypt or decrypt.
         
+    Returns:
+    --------
+    str
+        Encrypted or decrypted text.
+    """
     finish = ''
-    for i in content_upper:
-        idx = alphabet.find(i)
-        idx2 = (idx + step) % len(alphabet)
-        if i in alphabet:
-            finish += alphabet[idx2]
+    for i in text:
+        if i.upper() in alphabet:
+            idx = alphabet.find(i.upper())
+            if mode == Mode.ENCRYPT:
+                idx2 = (idx + step) % len(alphabet)
+            else:
+                idx2 = (idx - step) % len(alphabet)
+            finish += alphabet[idx2] if i.isupper() else alphabet[idx2].lower()
         else:
             finish += i
-            
-    write_encrypted_text(finish)
-    write_key(step)
-
+    return finish
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='encrypt text using Caesar cipher')
-    parser.add_argument('file_path', type=str, help='path to the file with text to encrypt him')
-    parser.add_argument('step', type=int, help='step of encryption')
+    parser = argparse.ArgumentParser(description='Encrypt or decrypt text using Caesar cipher')
+    parser.add_argument('file_path', type=str, help='Path to the file with text to process')
+    parser.add_argument('step', type=int, help='Step of encryption or decryption')
+    parser.add_argument('mode', type=str, choices=['encrypt', 'decrypt'], help='Mode of operation, encrypt or decrypt')
     args = parser.parse_args()
+
+    text = file_utils.read_file(args.file_path)
+    mode = Mode.ENCRYPT if args.mode == 'encrypt' else Mode.DECRYPT
+
+    processed_text = caesar_cipher(text, args.step, mode)
     
-    encryption(args.file_path, args.step)
+    if args.mode == 'encrypt':
+        file_utils.write_text_to_file('encrypted.txt', processed_text)
+        file_utils.write_dict_to_json('key.json', {'step': args.step})
+        print("Text encrypted successfully.")
+    else:
+        file_utils.write_text_to_file('decrypted.txt', processed_text)
+        print("Text decrypted successfully.")

@@ -1,29 +1,27 @@
+import argparse
 from collections import Counter
-import json
+from ..task1.file_utils import save_to_json, save_to_text
 
 
-def frequency():
+def frequency(filename):
     freq = {}
-    with open('cod3.txt', 'r', encoding='UTF-8') as f:
-        data = f.read().lower()
-        data = data.replace('\n', '')
-        for char in data:
-            if char in freq:
-                freq[char] += 1
-            else:
-                freq[char] = 1
+    with open(filename, 'r', encoding='UTF-8') as f:
+        data = f.read().lower().replace('\n', '')
+    
+    freq = Counter(data)
     total_chars = len(data)
-    for i in freq:
-        freq[i] /= total_chars
-    sorted_freq = Counter(freq).most_common()
+    freq_percentage = {char: count/total_chars for char, count in freq.items()}
+    sorted_freq = sorted(freq_percentage.items(), key=lambda x: x[1], reverse=True)
     
-    with open('frequencies.json', 'w') as json_file:
-        json.dump(dict(sorted_freq), json_file, indent=4)
+    sorted_freq_text = [f"{char}: {frequency}" for char, frequency in sorted_freq]
     
-    with open('frequencies.txt', 'w', encoding='UTF-8') as text_file:
-        for char, frequency in sorted_freq:
-            text_file.write(f"{char}: {frequency}\n")
+    save_to_json(dict(sorted_freq), f'{filename}_frequencies.json')
+    save_to_text(sorted_freq_text, f'{filename}_frequencies.txt')
 
 
 if __name__ == "__main__":
-    frequency()
+    parser = argparse.ArgumentParser(description='Calculate character frequencies in a text file.')
+    parser.add_argument('filename', type=str, help='Input text file name')
+    args = parser.parse_args()
+    
+    frequency(args.filename)
