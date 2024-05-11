@@ -3,11 +3,14 @@ import json
 from enum import Enum
 import file_utils
 
+
 alphabet = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'
+
 
 class Mode(Enum):
     ENCRYPT = 1
     DECRYPT = 2
+
 
 def caesar_cipher(text: str, step: int, mode: Mode) -> str:
     """
@@ -39,6 +42,7 @@ def caesar_cipher(text: str, step: int, mode: Mode) -> str:
         else:
             finish += i
     return finish
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Encrypt or decrypt text using Caesar cipher')

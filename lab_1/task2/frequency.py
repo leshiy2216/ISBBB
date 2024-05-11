@@ -3,6 +3,7 @@ import argparse
 import json
 from file_utils import read_file, write_text_to_file
 
+
 def read_settings(settings_file_path: str) -> Tuple[str, str]:
     """
     Read encryption and decryption settings.
