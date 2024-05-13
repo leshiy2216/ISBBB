@@ -30,14 +30,22 @@ def caesar_cipher(text: str, step: int, mode: Mode) -> str:
     str
         Encrypted or decrypted text.
     """
+    def encrypt(idx: int) -> int:
+        return (idx + step) % len(alphabet)
+    
+    def decrypt(idx: int) -> int:
+        return (idx - step) % len(alphabet)
+    
+    mapping = {
+        Mode.ENCRYPT: encrypt,
+        Mode.DECRYPT: decrypt
+    }
+    
     finish = ''
     for i in text:
         if i.upper() in alphabet:
             idx = alphabet.find(i.upper())
-            if mode == Mode.ENCRYPT:
-                idx2 = (idx + step) % len(alphabet)
-            else:
-                idx2 = (idx - step) % len(alphabet)
+            idx2 = mapping[mode](idx)
             finish += alphabet[idx2] if i.isupper() else alphabet[idx2].lower()
         else:
             finish += i
@@ -56,7 +64,7 @@ if __name__ == "__main__":
 
     processed_text = caesar_cipher(text, args.step, mode)
     
-    if args.mode == 'encrypt':
+    if mode == Mode.ENCRYPT:
         file_utils.write_text_to_file('encrypted.txt', processed_text)
         file_utils.write_dict_to_json('key.json', {'step': args.step})
         print("Text encrypted successfully.")

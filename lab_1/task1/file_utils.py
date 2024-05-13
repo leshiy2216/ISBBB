@@ -1,5 +1,5 @@
-from typing import Tuple, Any, Dict
 import json
+from typing import Tuple, List, Any, Dict
 
 
 def read_file(file_path: str) -> str:
@@ -81,12 +81,40 @@ def write_decryption_key(key_file_path: str, decryption_mapping: Dict[str, str])
         print(f"Произошла ошибка при записи ключа в файл: {e}")
 
 
-def save_to_json(data, filename):
+def save_to_json(data: Any, filename: str) -> None:
+    """
+    Сохраняет данные в формате JSON в файл.
+
+    Parameters
+    ----------
+    data : Any
+        Данные для сохранения в JSON формате.
+    filename : str
+        Путь к файлу для сохранения данных.
+
+    Returns
+    -------
+    None
+    """
     with open(filename, 'w') as json_file:
         json.dump(data, json_file, indent=4)
 
 
-def save_to_text(sorted_freq, filename):
+def save_to_text(sorted_freq: List[Tuple[str, int]], filename: str) -> None:
+    """
+    Сохраняет отсортированную частоту символов в текстовый файл.
+
+    Parameters
+    ----------
+    sorted_freq : List[Tuple[str, int]]
+        Отсортированный список кортежей, содержащих символы и их частоты.
+    filename : str
+        Путь к файлу для сохранения отсортированных данных.
+
+    Returns
+    -------
+    None
+    """
     with open(filename, 'w', encoding='UTF-8') as text_file:
         for char, frequency in sorted_freq:
             text_file.write(f"{char}: {frequency}\n")

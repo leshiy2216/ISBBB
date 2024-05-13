@@ -1,18 +1,7 @@
-from typing import Tuple
 import argparse
 import json
-from file_utils import read_file, write_text_to_file
-
-
-def read_settings(settings_file_path: str) -> Tuple[str, str]:
-    """
-    Read encryption and decryption settings.
-    Args:
-        settings_file_path: str
-    """
-    with open(settings_file_path, 'r', encoding='UTF-8') as settings_file:
-        settings = json.load(settings_file)
-    return settings.get("crypt_alphabet", ""), settings.get("normal_alphabet", "")
+from typing import Tuple
+from task1.file_utils import read_file, write_text_to_file, read_settings, write_decryption_key
 
 
 def generate_decryption_key(crypt_alphabet: str, normal_alphabet: str) -> dict:
@@ -57,17 +46,6 @@ def decrypt(text: str, decryption_mapping: dict) -> str:
     for char in text:
         decrypted_text += decryption_mapping.get(char, char)
     return decrypted_text
-
-
-def write_decryption_key(key_file_path: str, decryption_mapping: dict) -> None:
-    """
-    Write decryption key to a JSON file.
-    Args:
-        key_file_path: str
-        decryption_mapping: dict
-    """
-    with open(key_file_path, 'w', encoding='UTF-8') as key_file:
-        json.dump(decryption_mapping, key_file, ensure_ascii=False, indent=4)
 
 
 if __name__ == "__main__":

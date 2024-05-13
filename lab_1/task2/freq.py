@@ -1,12 +1,23 @@
 import argparse
 from collections import Counter
-from ..task1.file_utils import save_to_json, save_to_text
+from task1.file_utils import save_to_json, save_to_text, read_file
 
 
-def frequency(filename):
+def frequency(filename: str) -> None:
+    """
+    Вычисляет частоту встречаемости символов в текстовом файле и сохраняет результаты в JSON и текстовый файлы.
+    
+    Parameters
+    ----------
+    filename : str
+        Имя входного текстового файла.
+        
+    Returns
+    -------
+    None
+    """
     freq = {}
-    with open(filename, 'r', encoding='UTF-8') as f:
-        data = f.read().lower().replace('\n', '')
+    data = read_file(filename).lower().replace('\n', '')
     
     freq = Counter(data)
     total_chars = len(data)
