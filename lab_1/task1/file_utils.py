@@ -1,5 +1,5 @@
 import json
-from typing import Tuple, List, Any, Dict
+from typing import Any, Dict, List, Tuple
 
 
 def read_file(file_path: str) -> str:
@@ -130,4 +130,4 @@ def read_settings(settings_file_path: str) -> Tuple[str, str]:
     """
     with open(settings_file_path, 'r', encoding='UTF-8') as settings_file:
         settings = json.load(settings_file)
-    return settings.get("crypt_alphabet", ""), settings.get("normal_alphabet", "")
+    return settings

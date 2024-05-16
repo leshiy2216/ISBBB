@@ -24,7 +24,7 @@ def decrypt_text(input_file: str, output_file: str, settings_file: str, key_file
         settings_file (str): Path to the JSON file containing encryption settings.
         key_file (str): Path to the JSON file to write the decryption key.
     """
-    crypt_alphabet, normal_alphabet = read_settings(settings_file)
+    crypt_alphabet, normal_alphabet = decryption_settings
     decryption_mapping = generate_decryption_key(crypt_alphabet, normal_alphabet)
 
     data = read_file(input_file).lower().replace('\n', '')
@@ -56,4 +56,6 @@ if __name__ == "__main__":
     parser.add_argument('key_file', help='Path to the JSON file to write the decryption key.')
     args = parser.parse_args()
 
+    decryption_settings = read_settings(args.settings_file)
+    
     decrypt_text(args.input_file, args.output_file, args.settings_file, args.key_file)
