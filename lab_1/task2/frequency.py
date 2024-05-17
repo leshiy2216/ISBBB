@@ -1,5 +1,6 @@
 import argparse
 import json
+
 from typing import Tuple
 from task1.file_utils import read_file, write_text_to_file, read_settings, write_decryption_key
 
