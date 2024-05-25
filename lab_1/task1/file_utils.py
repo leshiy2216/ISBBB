@@ -97,8 +97,15 @@ def save_to_json(data: Any, filename: str) -> None:
     -------
     None
     """
-    with open(filename, 'w') as json_file:
-        json.dump(data, json_file, indent=4)
+    try:
+        with open(filename, 'w') as json_file:
+            json.dump(data, json_file, indent=4)
+    except FileNotFoundError:
+        print(f"Ошибка: файл '{filename}' не найден.")
+        return ""
+    except Exception as e:
+        print(f"Произошла ошибка при чтении файла: {e}")
+        return ""
 
 
 def save_to_text(sorted_freq: List[Tuple[str, int]], filename: str) -> None:
@@ -116,9 +123,16 @@ def save_to_text(sorted_freq: List[Tuple[str, int]], filename: str) -> None:
     -------
     None
     """
-    with open(filename, 'w', encoding='UTF-8') as text_file:
-        for char, frequency in sorted_freq:
-            text_file.write(f"{char}: {frequency}\n")
+    try:
+        with open(filename, 'w', encoding='UTF-8') as text_file:
+            for char, frequency in sorted_freq:
+                text_file.write(f"{char}: {frequency}\n")
+    except FileNotFoundError:
+        print(f"Ошибка: файл '{filename}' не найден.")
+        return ""
+    except Exception as e:
+        print(f"Произошла ошибка при чтении файла: {e}")
+        return ""
 
 
 def read_settings(settings_file_path: str) -> Tuple[str, str]:
@@ -129,6 +143,13 @@ def read_settings(settings_file_path: str) -> Tuple[str, str]:
     Returns:
         Tuple[str, str]: Tuple containing the crypt alphabet and normal alphabet.
     """
-    with open(settings_file_path, 'r', encoding='UTF-8') as settings_file:
-        settings = json.load(settings_file)
-    return settings
+    try:
+        with open(settings_file_path, 'r', encoding='UTF-8') as settings_file:
+            settings = json.load(settings_file)
+            return settings
+    except FileNotFoundError:
+        print(f"Ошибка: файл '{settings_file_path}' не найден.")
+        return ""
+    except Exception as e:
+        print(f"Произошла ошибка при чтении файла: {e}")
+        return ""

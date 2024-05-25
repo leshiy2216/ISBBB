@@ -1,8 +1,9 @@
 import argparse
 import json
+import file_utils
+
 from enum import Enum
 from typing import Match
-import file_utils
 
 
 alphabet = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'
@@ -63,11 +64,16 @@ if __name__ == "__main__":
 
     processed_text = caesar_cipher(text, args.step, mode)
 
-match mode:
-    case Mode.ENCRYPT:
-        file_utils.write_text_to_file('encrypted.txt', processed_text)
-        file_utils.write_dict_to_json('key.json', {'step': args.step})
-        print("Text encrypted successfully.")
-    case Mode.DECRYPT:
-        file_utils.write_text_to_file('decrypted.txt', processed_text)
-        print("Text decrypted successfully.")
+    output_file = ''
+    key_file = ''
+    match mode:
+        case Mode.ENCRYPT:
+            output_file = args.file_path.replace('.txt', '_encrypted.txt')
+            key_file = args.file_path.replace('.txt', '_key.json')
+            file_utils.write_text_to_file(output_file, processed_text)
+            file_utils.write_dict_to_json(key_file, {'step': args.step})
+            print(f"Text encrypted successfully.")
+        case Mode.DECRYPT:
+            output_file = args.file_path.replace('.txt', '_decrypted.txt')
+            file_utils.write_text_to_file(output_file, processed_text)
+            print(f"Text decrypted successfully.")
