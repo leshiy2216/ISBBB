@@ -13,6 +13,16 @@ def read_bit_sequences_from_json(filename: str) -> Dict[str, str]:
     Returns:
         Dict[str, str]: A dictionary where keys are sequence names and values are bit sequences.
     """
-    with open(filename, 'r') as file:
-        data = json.load(file)
-    return data 
+    try:
+        with open(filename, 'r') as file:
+            data = json.load(file)
+        return data
+    except FileNotFoundError:
+        print(f"Ошибка: Файл '{filename}' не найден.")
+        raise
+    except json.JSONDecodeError:
+        print(f"Ошибка: Файл '{filename}' содержит некорректный JSON.")
+        raise
+    except Exception as e:
+        print(f"Произошла непредвиденная ошибка: {e}")
+        raise

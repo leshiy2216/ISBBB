@@ -2,8 +2,12 @@ import json
 import math
 
 from typing import List, Dict
-from scipy.special import gammaincc
+from scipy.special import gammaincc, gammainc, erfc
 from json_reader import read_bit_sequences_from_json
+
+
+LENGTH_OF_BLOCK = 8
+PI_I = [0.2148, 0.3672, 0.2305, 0.1875]
 
 
 def frequency_test(sequence: str) -> float:
@@ -16,11 +20,24 @@ def frequency_test(sequence: str) -> float:
     Returns:
         float: The p-value of the frequency test.
     """
-    n = len(sequence)
-    s_obs = sum(1 if bit == '1' else -1 for bit in sequence)
-    s_obs = abs(s_obs) / math.sqrt(n)
-    p_value = gammaincc(n/2, s_obs**2 / 2)
-    return p_value
+    try:
+        N = len(sequence)
+        sum = 0
+        for bit in sequence:
+            if bit == "0":
+                sum -= 1
+            else:
+                sum += 1
+        S_N = (1.0 / math.sqrt(N)) * abs(sum)
+        P_value = erfc(S_N / math.sqrt(2))
+        if P_value < 0 or P_value > 1:
+            raise ValueError('P should be in range [0, 1]')
+        return P_value
+    except Exception as e:
+        print(f"Произошла ошибка: {e}")
+        raise
+
+    return P_value
 
 
 def block_frequency_test(sequence: str, block_size: int = 8) -> float:
@@ -60,36 +77,45 @@ def longest_run_of_ones_test(sequence: str, block_size: int = 8) -> float:
     Returns:
         float: The p-value of the longest run of ones test.
     """
-    n = len(sequence)
-    blocks = n // block_size
-
-    longest_runs = []
-    for i in range(blocks):
-        block = sequence[i * block_size:(i + 1) * block_size]
-        max_run = max(map(len, ''.join(str(x) for x in block).split('0')))
-        longest_runs.append(max_run)
-
-    pi = [0] * (block_size + 1)
-    for run in longest_runs:
-        if run <= block_size:
-            pi[run] += 1
-
-    pi = [x / blocks for x in pi]
+    try:
+        blocks = []
+        for i in range(0, int(len(sequence) / LENGTH_OF_BLOCK)):
+            blocks.append(sequence[i * LENGTH_OF_BLOCK: (i + 1) * LENGTH_OF_BLOCK])
+        
+        V = [0, 0, 0, 0]
+        for block in blocks:
+            count = 0
+            max_length = 0
+            for bit in block:
+                if bit == "1":
+                    count += 1
+                    max_length = max(max_length, count)
+                else:
+                    count = 0
+            
+            if max_length <= 1:
+                V[0] += 1
+            elif max_length == 2:
+                V[1] += 1
+            elif max_length == 3:
+                V[2] += 1
+            elif max_length >= 4:
+                V[3] += 1
+        
+        Xi_in_2 = 0
+        for i in range(0, 4):
+            Xi_in_2 += pow((V[i] - 16 * PI_I[i]), 2) / (16 * PI_I[i])
+        
+        P_value = gammainc(1.5, (Xi_in_2 / 2))
+        
+        if P_value < 0 or P_value > 1:
+            raise ValueError('P should be in range [0, 1]')
+        
+        return P_value
     
-    if block_size == 8:
-        v = [0.2148, 0.3672, 0.2305, 0.1875]
-        piks = [pi[1], pi[2], pi[3], sum(pi[4:])]
-    elif block_size == 128:
-        v = [0.1174, 0.2430, 0.2493, 0.1752, 0.1027, 0.1124]
-        piks = [pi[4], pi[5], pi[6], pi[7], pi[8], sum(pi[9:])]
-    elif block_size == 512:
-        v = [0.1170, 0.2430, 0.2493, 0.1752, 0.1027, 0.1124]
-        piks = [pi[10], pi[11], pi[12], pi[13], pi[14], sum(pi[15:])]
-
-    chi_squared = sum([(obs - exp)**2 / exp for obs, exp in zip(piks, v)])
-
-    p_value = gammaincc(len(v) / 2, chi_squared / 2)
-    return p_value
+    except Exception as e:
+        print(f"Произошла ошибка: {e}")
+        raise
 
 
 def run_nist_tests(sequences: Dict[str, str]) -> None:
