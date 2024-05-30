@@ -1,0 +1,8 @@
+{
+    "initial_file": "raven.txt",
+    "encrypted_file": "encrypted_raven.txt",
+    "decrypted_file": "decrypted_raven.txt",
+    "symmetric_key": "sym_key.txt",
+    "public_key": "public_key.pem",
+    "private_key": "private_key.pem"
+  }
