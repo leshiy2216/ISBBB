@@ -40,30 +40,30 @@ def frequency_test(sequence: str) -> float:
     return P_value
 
 
-def block_frequency_test(sequence: str, block_size: int = 8) -> float:
+def block_frequency_test(sequence: str) -> float:
     """
     Perform the block frequency test on a given bit sequence.
     
     Args:
         sequence (str): A string of bits ('0' and '1').
-        block_size (int): The size of each block. Default is 8.
 
     Returns:
         float: The p-value of the block frequency test.
     """
-    n = len(sequence)
-    num_blocks = n // block_size
-    proportions = []
+    sum = 0
+    N = len(sequence)
+    for bit in sequence:
+        sum += int(bit)
+    sigma = sum / N
 
-    for i in range(num_blocks):
-        block = sequence[i * block_size:(i + 1) * block_size]
-        ones_count = block.count('1')
-        pi = ones_count / block_size
-        proportions.append(pi)
-    
-    chi_squared = 4 * block_size * sum((pi - 0.5)**2 for pi in proportions)
-    p_value = gammaincc(num_blocks / 2, chi_squared / 2)
-    return p_value
+    if not abs(sigma - 0.5) < (2 / (N ** 0.5)):
+        return 0
+    Vn = 0
+    for i in range(0, len(sequence) - 1):
+        if sequence[i] != sequence[i + 1]:
+            Vn += 1
+    P = math.erfc(abs(Vn - 2 * N * sigma * (1 - sigma)) / (2 * ((2 * N) ** 0.5) * sigma * (1 - sigma)))
+    return P
 
 
 def longest_run_of_ones_test(sequence: str, block_size: int = 8) -> float:
@@ -93,14 +93,15 @@ def longest_run_of_ones_test(sequence: str, block_size: int = 8) -> float:
                 else:
                     count = 0
             
-            if max_length <= 1:
-                V[0] += 1
-            elif max_length == 2:
-                V[1] += 1
-            elif max_length == 3:
-                V[2] += 1
-            elif max_length >= 4:
-                V[3] += 1
+            match max_length:
+                case length if length <= 1:
+                    V[0] += 1
+                case 2:
+                    V[1] += 1
+                case 3:
+                    V[2] += 1
+                case length if length >= 4:
+                    V[3] += 1
         
         Xi_in_2 = 0
         for i in range(0, 4):
